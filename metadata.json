@@ -1,0 +1,6 @@
+{
+  "name": "E-Surat Bangka Barat",
+  "description": "Aplikasi tata naskah dinas resmi Pemerintah Kabupaten Bangka Barat sesuai Perbup No. 67 Tahun 2023.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
