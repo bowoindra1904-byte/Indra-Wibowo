@@ -19,6 +19,7 @@ export default function App() {
     return INITIAL_LETTER_STATE;
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [view, setView] = useState<'both' | 'editor' | 'preview'>('both');
   const [rawNotes, setRawNotes] = useState(() => localStorage.getItem('raw_notes') || "");
   const [activeTemplate, setActiveTemplate] = useState(LETTER_TEMPLATES[0].id);
@@ -56,6 +57,7 @@ export default function App() {
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setErrorMsg(null);
     try {
       const response = await fetch('/api/generate-letter', {
         method: 'POST',
@@ -67,12 +69,20 @@ export default function App() {
           sections: data.sections
         }),
       });
+      
       const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || "Gagal menghubungi AI. Silakan coba lagi.");
+      }
+
       if (result.sections) {
         setData(prev => ({ ...prev, sections: result.sections }));
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fetch error:", error);
+      setErrorMsg(error.message);
+      alert(`Terjadi kesalahan: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }

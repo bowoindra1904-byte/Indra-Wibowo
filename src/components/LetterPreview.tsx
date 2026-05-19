@@ -10,7 +10,7 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
     <div className="bg-white shadow-2xl rounded-sm p-12 min-h-[1100px] w-full max-w-[800px] mx-auto text-[11pt] font-serif leading-relaxed text-gray-900 overflow-hidden break-words">
       {/* Kop Surat */}
       <div className="border-b-4 border-double border-black pb-3 mb-8 relative flex items-center min-h-[120px] font-sans">
-        {data.showLogo && (
+        {(data.showLogo && data.logoUrl) && (
           <div className="absolute left-0 top-0 bottom-0 w-24 flex items-center justify-center">
             <img 
               src={data.logoUrl} 

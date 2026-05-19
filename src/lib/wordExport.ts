@@ -33,8 +33,23 @@ interface LetterData {
 async function getLogoData(url: string) {
   try {
     if (!url) return null;
+    
+    // Handle data URLs directly
+    if (url.startsWith('data:')) {
+      const base64 = url.split(',')[1];
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
     const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      console.warn(`Logo fetch failed with status: ${response.status}`);
+      return null;
+    }
     const blob = await response.blob();
     return await blob.arrayBuffer();
   } catch (e) {

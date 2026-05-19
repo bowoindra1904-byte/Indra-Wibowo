@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, User, Sparkles, Image as ImageIcon, Library } from 'lucide-react';
+import { FileText, User, Sparkles, Image as ImageIcon, Library, Trash2 } from 'lucide-react';
 import { LetterState, LETTER_TEMPLATES } from '../types';
 import { motion } from 'motion/react';
 
@@ -24,6 +24,17 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({ data, onChange, onGe
     const newSections = [...data.sections];
     newSections[index].content = content;
     onChange({ ...data, sections: newSections });
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateField('logoUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -140,13 +151,44 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({ data, onChange, onGe
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">URL Logo</label>
-                <input 
-                  type="text" 
-                  value={data.logoUrl}
-                  onChange={(e) => updateField('logoUrl', e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-                />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Upload Logo</label>
+                <div className="space-y-3">
+                  {!data.logoUrl ? (
+                    <div className="flex flex-col gap-2">
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                        id="logo-upload"
+                      />
+                      <label 
+                        htmlFor="logo-upload"
+                        className="w-full h-24 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-indigo-400 hover:bg-indigo-50/30 transition-all cursor-pointer group"
+                      >
+                        <div className="p-2 bg-indigo-50 rounded-full text-indigo-600 group-hover:scale-110 transition-transform">
+                          <ImageIcon className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Klik untuk Upload Logo</span>
+                      </label>
+                    </div>
+                  ) : (
+                    <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-2">
+                      <img 
+                        src={data.logoUrl} 
+                        alt="Logo Preview" 
+                        className="h-20 w-auto mx-auto object-contain"
+                      />
+                      <button 
+                        onClick={() => updateField('logoUrl', '')}
+                        className="absolute top-1 right-1 p-1.5 bg-rose-500 text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-600"
+                        title="Hapus Logo"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
