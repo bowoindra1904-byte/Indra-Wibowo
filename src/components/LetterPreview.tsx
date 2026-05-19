@@ -34,40 +34,39 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
       {data.templateId === 'nd' || data.templateId === 'lpd' ? (
         /* Layout untuk NOTA DINAS atau LAPORAN PERJALANAN DINAS */
         <div className="mb-8 border-t-2 border-b-2 border-black py-2">
-          <h3 className="text-center font-bold text-[14pt] mb-2 uppercase">{data.title}</h3>
-          <table className="w-full text-[11pt]">
-            <tbody>
-              <tr>
-                <td className="w-24 align-top">{data.templateId === 'lpd' ? 'Kepada' : 'Kepada'}</td>
-                <td className="w-4 align-top">:</td>
-                <td className="align-top font-bold">{data.recipient}</td>
-              </tr>
-              <tr>
-                <td className="align-top">Dari</td>
-                <td className="align-top">:</td>
-                <td className="align-top font-bold">{data.senderName}</td>
-              </tr>
-              {data.templateId === 'nd' && (
-                <tr>
-                  <td className="align-top">Nomor</td>
-                  <td className="align-top">:</td>
-                  <td className="align-top">{data.letterNumber}</td>
-                </tr>
-              )}
-              <tr>
-                <td className="align-top">Tanggal</td>
-                <td className="align-top">:</td>
-                <td className="align-top">{data.date}</td>
-              </tr>
-              <tr>
-                <td className="align-top">Hal</td>
-                <td className="align-top">:</td>
-                <td className="align-top font-bold underline italic">{data.hal}</td>
-              </tr>
-            </tbody>
-          </table>
+          <h3 className="text-center font-bold text-[14pt] mb-4 uppercase">{data.title}</h3>
+          <div className="space-y-1 text-[11pt]">
+            <div className="flex">
+              <span className="w-24 shrink-0">Kepada</span>
+              <span className="w-4 shrink-0">:</span>
+              <span className="font-bold">{data.recipient}</span>
+            </div>
+            <div className="flex">
+              <span className="w-24 shrink-0">Dari</span>
+              <span className="w-4 shrink-0">:</span>
+              <span className="font-bold">{data.senderName}</span>
+            </div>
+            {data.templateId === 'nd' && (
+              <div className="flex">
+                <span className="w-24 shrink-0">Nomor</span>
+                <span className="w-4 shrink-0">:</span>
+                <span>{data.letterNumber}</span>
+              </div>
+            )}
+            <div className="flex">
+              <span className="w-24 shrink-0">Tanggal</span>
+              <span className="w-4 shrink-0">:</span>
+              <span>{data.date}</span>
+            </div>
+            <div className="flex">
+              <span className="w-24 shrink-0">Hal</span>
+              <span className="w-4 shrink-0">:</span>
+              <span className="font-bold underline italic">{data.hal}</span>
+            </div>
+          </div>
         </div>
-      ) : (data.templateId === 'st' || data.templateId === 'sk' || data.templateId === 'std' || data.templateId === 'se' || data.templateId === 'ba') ? (
+      ) :
+ (data.templateId === 'st' || data.templateId === 'sk' || data.templateId === 'std' || data.templateId === 'se' || data.templateId === 'ba') ? (
         /* Layout untuk SURAT TUGAS / KETERANGAN / TEGURAN / EDARAN / BERITA ACARA */
         <div className="text-center mb-8">
           <h3 className="font-bold uppercase text-[12pt] underline">{data.title}</h3>
@@ -94,11 +93,13 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
                   <td className="align-top">Lampiran</td>
                   <td className="align-top">:</td>
                   <td className="align-top">{data.lampiran}</td>
-                  <td rowSpan={2} className="text-right align-top pt-4">
-                    <p className="font-bold">Kepada Yth,</p>
-                    <p className="max-w-[300px] ml-auto">{data.recipient}</p>
-                    <p className="ml-auto">di -</p>
-                    <p className="ml-auto font-bold">Mentok</p>
+                  <td rowSpan={2} className="w-[45%] align-top pt-4">
+                    <div className="ml-12">
+                      <p className="font-bold">Kepada Yth,</p>
+                      <p className="max-w-[300px] mb-1">{data.recipient}</p>
+                      <p className="mb-0">di -</p>
+                      <p className="pl-6 font-bold">{data.place || 'Mentok'}</p>
+                    </div>
                   </td>
                 </tr>
                 <tr>

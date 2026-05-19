@@ -250,7 +250,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({ data, onChange, onGe
       </div>
 
       {data.sections.map((section, idx) => (
-          <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-3">
+          <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-3">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">{section.title}</label>
             <textarea 
               value={section.content}

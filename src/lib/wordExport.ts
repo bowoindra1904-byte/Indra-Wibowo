@@ -32,7 +32,9 @@ interface LetterData {
 
 async function getLogoData(url: string) {
   try {
+    if (!url) return null;
     const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const blob = await response.blob();
     return await blob.arrayBuffer();
   } catch (e) {
@@ -42,7 +44,13 @@ async function getLogoData(url: string) {
 }
 
 export const exportToWord = async (data: LetterData) => {
-  const logoData = data.showLogo ? await getLogoData(data.logoUrl || "") : null;
+  let logoBuffer: Uint8Array | null = null;
+  if (data.showLogo && data.logoUrl) {
+    const arrayBuffer = await getLogoData(data.logoUrl);
+    if (arrayBuffer) {
+      logoBuffer = new Uint8Array(arrayBuffer);
+    }
+  }
   
   const doc = new Document({
     sections: [
@@ -65,13 +73,16 @@ export const exportToWord = async (data: LetterData) => {
                 children: [
                    new TableCell({
                      width: { size: 15, type: WidthType.PERCENTAGE },
-                     children: logoData ? [
+                     children: logoBuffer ? [
                        new Paragraph({
                          children: [
-                           new (ImageRun as any)({
-                             data: new Uint8Array(logoData),
-                             transformation: { width: data.logoSize || 60, height: ((data.logoSize || 60) * 1.25) },
-                           }),
+                           new ImageRun({
+                             data: logoBuffer,
+                             transformation: { 
+                               width: data.logoSize || 60, 
+                               height: Math.round((data.logoSize || 60) * 1.2) 
+                             },
+                           } as any),
                          ],
                        }),
                      ] : [],
@@ -122,46 +133,29 @@ export const exportToWord = async (data: LetterData) => {
 
           // Conditional Header/Meta based on templateId
           ...(data.templateId === 'nd' || data.templateId === 'lpd' ? [
-            // Layout NOTA DINAS / LPD Header
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              borders: {
+            // Layout NOTA DINAS / LPD Header (Non-Table)
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 200 },
+              children: [new TextRun({ text: data.title.toUpperCase(), bold: true, size: 28 })],
+            }),
+            new Paragraph({
+              border: {
                 top: { style: BorderStyle.SINGLE, size: 12 },
                 bottom: { style: BorderStyle.SINGLE, size: 12 },
-                left: { style: BorderStyle.NONE },
-                right: { style: BorderStyle.NONE },
-                insideHorizontal: { style: BorderStyle.NONE },
-                insideVertical: { style: BorderStyle.NONE },
               },
-              rows: [
-                new TableRow({ children: [
-                  new TableCell({ columnSpan: 2, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: data.title.toUpperCase(), bold: true, size: 28 })] })] }),
-                ]}),
-                new TableRow({ children: [
-                  new TableCell({ width: { size: 20 }, children: [new Paragraph("Kepada")] }),
-                  new TableCell({ width: { size: 80 }, children: [new Paragraph({ children: [new TextRun({ text: `: ${data.recipient || ""}`, bold: true })] })] }),
-                ]}),
-                new TableRow({ children: [
-                  new TableCell({ width: { size: 20 }, children: [new Paragraph("Dari")] }),
-                  new TableCell({ width: { size: 80 }, children: [new Paragraph({ children: [new TextRun({ text: `: ${data.senderName || ""}`, bold: true })] })] }),
-                ]}),
+              spacing: { before: 200, after: 400 },
+              children: [
+                new TextRun({ text: `Kepada     : ${data.recipient || ""}`, bold: true, size: 22, break: 1 }),
+                new TextRun({ text: `Dari       : ${data.senderName || ""}`, bold: true, size: 22, break: 1 }),
                 ...(data.templateId === 'nd' ? [
-                  new TableRow({ children: [
-                    new TableCell({ width: { size: 20 }, children: [new Paragraph("Nomor")] }),
-                    new TableCell({ width: { size: 80 }, children: [new Paragraph(`: ${data.letterNumber || ""}`)] }),
-                  ]}),
+                  new TextRun({ text: `Nomor      : ${data.letterNumber || ""}`, size: 22, break: 1 }),
                 ] : []),
-                new TableRow({ children: [
-                  new TableCell({ width: { size: 20 }, children: [new Paragraph("Tanggal")] }),
-                  new TableCell({ width: { size: 80 }, children: [new Paragraph(`: ${data.date || ""}`)] }),
-                ]}),
-                new TableRow({ children: [
-                  new TableCell({ width: { size: 20 }, children: [new Paragraph("Hal")] }),
-                  new TableCell({ width: { size: 80 }, children: [new Paragraph({ children: [new TextRun({ text: `: ${data.hal || ""}`, bold: true, underline: {}, italics: true })] })] }),
-                ]}),
-              ]
+                new TextRun({ text: `Tanggal    : ${data.date || ""}`, size: 22, break: 1 }),
+                new TextRun({ text: `Hal        : ${data.hal || ""}`, bold: true, italics: true, underline: {}, size: 22, break: 1 }),
+                new TextRun({ text: "", break: 1 }), // Extra spacing inside border at bottom
+              ],
             }),
-            new Paragraph({ spacing: { after: 400 } }),
           ] : 
 (data.templateId === 'st' || data.templateId === 'sk' || data.templateId === 'std') ? [
             // Layout SURAT TUGAS / KETERANGAN
@@ -196,7 +190,7 @@ export const exportToWord = async (data: LetterData) => {
                 new TableRow({
                   children: [
                     new TableCell({
-                      width: { size: 60, type: WidthType.PERCENTAGE },
+                      width: { size: 55, type: WidthType.PERCENTAGE },
                       children: [
                         new Paragraph({ children: [new TextRun({ text: `Nomor    : ${data.letterNumber || ""}`, size: 22 })] }),
                         new Paragraph({ children: [new TextRun({ text: `Lampiran : ${data.lampiran || ""}`, size: 22 })] }),
@@ -204,13 +198,13 @@ export const exportToWord = async (data: LetterData) => {
                       ],
                     }),
                     new TableCell({
-                      width: { size: 40, type: WidthType.PERCENTAGE },
+                      width: { size: 45, type: WidthType.PERCENTAGE },
                       children: [
-                        new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: `${data.place || "Mentok"}, ${data.date}`, size: 22 })] }),
-                        new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: "Kepada Yth,", size: 22, bold: true })] }),
-                        new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: data.recipient || "", size: 22, bold: true })] }),
-                        new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: "di -", size: 22 })] }),
-                        new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: "Mentok", size: 22, bold: true })] }),
+                        new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: `${data.place || "Mentok"}, ${data.date}`, size: 22 })], spacing: { after: 200 } }),
+                        new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: "Kepada Yth,", size: 22, bold: true })] }),
+                        new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: data.recipient || "", size: 22 })] }),
+                        new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: "di -", size: 22 })] }),
+                        new Paragraph({ alignment: AlignmentType.LEFT, children: [new TextRun({ text: data.place || "Mentok", size: 22, bold: true })], indent: { left: 400 } }),
                       ],
                     }),
                   ],
