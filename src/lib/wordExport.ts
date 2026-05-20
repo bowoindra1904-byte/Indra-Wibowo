@@ -28,6 +28,9 @@ interface LetterData {
   place?: string;
   templateId?: string;
   footer?: string;
+  lineSpacing?: number;
+  fontFamily?: string;
+  fontSize?: number;
 }
 
 async function getLogoData(url: string) {
@@ -58,6 +61,100 @@ async function getLogoData(url: string) {
   }
 }
 
+const parseContentToDocx = (content: string, lineSpacing: number, fontFamily?: string, fontSize?: number): any[] => {
+  if (!content) return [];
+
+  const lines = content.split('\n');
+  const elements: any[] = [];
+  let currentTableRows: string[][] = [];
+  let inTable = false;
+
+  const flushTable = () => {
+    if (currentTableRows.length > 0) {
+      const rows = currentTableRows.filter(row => {
+        const joined = row.join('').trim();
+        return !/^[:\-\s|]+$/.test(joined);
+      });
+
+      if (rows.length > 0) {
+        const headers = rows[0];
+        const bodyRows = rows.slice(1);
+
+        elements.push(
+          new Paragraph({ text: "", spacing: { before: 100, after: 100 } }),
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            borders: {
+              top: { style: BorderStyle.SINGLE, size: 8, color: "000000" },
+              bottom: { style: BorderStyle.SINGLE, size: 8, color: "000000" },
+              left: { style: BorderStyle.SINGLE, size: 8, color: "000000" },
+              right: { style: BorderStyle.SINGLE, size: 8, color: "000000" },
+              insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" },
+              insideVertical: { style: BorderStyle.SINGLE, size: 4, color: "CCCCCC" },
+            },
+            rows: [
+              new TableRow({
+                children: headers.map(cell => new TableCell({
+                  shading: { fill: "F1F5F9" },
+                  children: [
+                    new Paragraph({
+                      children: [new TextRun({ text: cell.trim(), bold: true, size: (fontSize || 12) * 2, font: fontFamily || "Times New Roman" })],
+                      spacing: { before: 100, after: 100 }
+                    })
+                  ]
+                }))
+              }),
+              ...bodyRows.map(row => new TableRow({
+                children: row.map(cell => new TableCell({
+                  children: [
+                    new Paragraph({
+                      children: [new TextRun({ text: cell.trim(), size: (fontSize || 12) * 2, font: fontFamily || "Times New Roman" })],
+                      spacing: { before: 100, after: 100 }
+                    })
+                  ]
+                }))
+              }))
+            ]
+          })
+        );
+      }
+      currentTableRows = [];
+    }
+  };
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('|') || (trimmed.includes('|') && trimmed.split('|').length > 2)) {
+      inTable = true;
+      let parts = line.split('|');
+      if (line.startsWith('|')) parts.shift();
+      if (line.endsWith('|')) parts.pop();
+      currentTableRows.push(parts);
+    } else {
+      if (inTable) {
+        flushTable();
+        inTable = false;
+      }
+      elements.push(
+        new Paragraph({
+          alignment: AlignmentType.BOTH,
+          children: [new TextRun({ text: line, size: (fontSize || 12) * 2, font: fontFamily || "Times New Roman" })],
+          spacing: {
+            line: Math.round(lineSpacing * 240),
+            after: 100
+          }
+        })
+      );
+    }
+  });
+
+  if (inTable) {
+    flushTable();
+  }
+
+  return elements;
+};
+
 export const exportToWord = async (data: LetterData) => {
   let logoBuffer: Uint8Array | null = null;
   if (data.showLogo && data.logoUrl) {
@@ -68,6 +165,16 @@ export const exportToWord = async (data: LetterData) => {
   }
   
   const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: {
+            font: data.fontFamily || "Times New Roman",
+            size: (data.fontSize || 12) * 2,
+          }
+        }
+      }
+    },
     sections: [
       {
         properties: {},
@@ -142,7 +249,7 @@ export const exportToWord = async (data: LetterData) => {
             ],
           }),
           new Paragraph({
-             border: { bottom: { color: "auto", space: 1, style: BorderStyle.SINGLE, size: 24 } },
+             border: { bottom: { color: "auto", space: 1, style: BorderStyle.DOUBLE, size: 24 } },
              spacing: { after: 200 }
           }),
 
@@ -156,8 +263,7 @@ export const exportToWord = async (data: LetterData) => {
             }),
             new Paragraph({
               border: {
-                top: { style: BorderStyle.SINGLE, size: 12 },
-                bottom: { style: BorderStyle.SINGLE, size: 12 },
+                bottom: { style: BorderStyle.SINGLE, size: 4 },
               },
               spacing: { before: 200, after: 400 },
               children: [
@@ -237,14 +343,17 @@ export const exportToWord = async (data: LetterData) => {
                 children: [new TextRun({ text: section.title, bold: true })],
               })
             ] : []),
-            ...section.content.split("\n").map(line => new Paragraph({
-              alignment: AlignmentType.BOTH,
-              children: [new TextRun({ text: line, size: 22 })],
-              spacing: { after: 100 }
-            }))
+            ...parseContentToDocx(section.content, data.lineSpacing || 1.15, data.fontFamily, data.fontSize)
           ]),
 
-          new Paragraph({ text: data.footer || "", spacing: { before: 400, after: 400 } }),
+          new Paragraph({ 
+            text: data.footer || "", 
+            spacing: { 
+              before: 400, 
+              after: 400,
+              line: Math.round((data.lineSpacing || 1.15) * 240)
+            } 
+          }),
 
           // Signatures
           new Table({

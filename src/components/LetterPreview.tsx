@@ -1,13 +1,116 @@
 import React from 'react';
 import { LetterState } from '../types';
 
+const renderSectionContent = (content: string, lineSpacing: number) => {
+  if (!content) return <span className="text-gray-400 italic">(Belum diisi)</span>;
+
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let currentTableRows: string[][] = [];
+  let inTable = false;
+
+  const flushTable = (key: string | number) => {
+    if (currentTableRows.length > 0) {
+      // Filter out markdown divider rows like |---|---|
+      const rows = currentTableRows.filter(row => {
+        const joined = row.join('').trim();
+        return !/^[:\-\s|]+$/.test(joined);
+      });
+
+      if (rows.length > 0) {
+        // Find if we have headers
+        const headers = rows[0];
+        const bodyRows = rows.slice(1);
+
+        elements.push(
+          <div key={`table-${key}`} className="my-4 overflow-x-auto">
+            <table className="min-w-full border-collapse border border-slate-400 text-[10pt] font-sans my-2">
+              <thead>
+                <tr className="bg-slate-50 border-b border-black">
+                  {headers.map((cell, cellIdx) => (
+                    <th key={cellIdx} className="border border-slate-400 px-3 py-2 text-left font-bold text-black align-top break-words">
+                      {cell.trim()}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {bodyRows.map((row, rowIdx) => (
+                  <tr key={rowIdx} className="border-b border-slate-300 hover:bg-slate-50">
+                    {row.map((cell, cellIdx) => (
+                      <td key={cellIdx} className="border border-slate-300 px-3 py-2 text-black align-top break-words">
+                        {cell.trim()}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+      currentTableRows = [];
+    }
+  };
+
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+    // A line belongs to a table if it contains '|' and has at least two cells
+    if (trimmed.startsWith('|') || (trimmed.includes('|') && trimmed.split('|').length > 2)) {
+      inTable = true;
+      let parts = line.split('|');
+      if (line.startsWith('|')) parts.shift();
+      if (line.endsWith('|')) parts.pop();
+      currentTableRows.push(parts);
+    } else {
+      if (inTable) {
+        flushTable(index);
+        inTable = false;
+      }
+      elements.push(
+        <p key={`p-${index}`} className="mb-2 text-justify" style={{ lineHeight: lineSpacing }}>
+          {line || '\u00A0'}
+        </p>
+      );
+    }
+  });
+
+  if (inTable) {
+    flushTable('final');
+  }
+
+  return <div className="space-y-1">{elements}</div>;
+};
+
 interface LetterPreviewProps {
   data: LetterState;
 }
 
 export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
+  const getFontFamilyStyle = () => {
+    switch (data.fontFamily) {
+      case 'Arial':
+        return '"Arial", "Helvetica Neue", sans-serif';
+      case 'Bookman Old Style':
+        return '"Bookman Old Style", "Bookman", "Georgia", serif';
+      case 'Georgia':
+        return '"Georgia", serif';
+      case 'Courier New':
+        return '"Courier New", Courier, monospace';
+      case 'Times New Roman':
+      default:
+        return '"Times New Roman", Times, serif';
+    }
+  };
+
   return (
-    <div className="bg-white shadow-2xl rounded-sm p-12 min-h-[1100px] w-full max-w-[800px] mx-auto text-[11pt] font-serif leading-relaxed text-gray-900 overflow-hidden break-words">
+    <div 
+      className="bg-white shadow-2xl rounded-sm p-12 min-h-[1100px] w-full max-w-[800px] mx-auto leading-relaxed text-gray-900 overflow-hidden break-words"
+      style={{ 
+        fontFamily: getFontFamilyStyle(),
+        fontSize: data.fontSize ? `${data.fontSize}pt` : '12pt'
+      }}
+    >
       {/* Kop Surat */}
       <div className="border-b-4 border-double border-black pb-3 mb-8 relative flex items-center min-h-[120px] font-sans">
         {(data.showLogo && data.logoUrl) && (
@@ -33,7 +136,7 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
       {/* Conditional Layouts based on templateId */}
       {data.templateId === 'nd' || data.templateId === 'lpd' ? (
         /* Layout untuk NOTA DINAS atau LAPORAN PERJALANAN DINAS */
-        <div className="mb-8 border-t-2 border-b-2 border-black py-2">
+        <div className="mb-8 border-b border-black py-2">
           <h3 className="text-center font-bold text-[14pt] mb-4 uppercase">{data.title}</h3>
           <div className="space-y-1 text-[11pt]">
             <div className="flex">
@@ -118,15 +221,15 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
         {data.sections.map((section, idx) => (
           <div key={idx}>
             {section.title && <h4 className="font-bold mb-2">{section.title}</h4>}
-            <div className={`pl-0 whitespace-pre-wrap ${data.templateId === 'sp' ? 'border p-4 bg-gray-50' : ''}`}>
-              {section.content || <span className="text-gray-400 italic">(Belum diisi)</span>}
+            <div className={`pl-0 ${data.templateId === 'sp' ? 'border p-4 bg-gray-50' : ''}`}>
+              {renderSectionContent(section.content, data.lineSpacing || 1.15)}
             </div>
           </div>
         ))}
       </div>
 
       <div className="mt-8 mb-12">
-        <p>{data.footer}</p>
+        <p style={{ lineHeight: data.lineSpacing || 1.15 }}>{data.footer}</p>
       </div>
 
       {/* Signatures */}

@@ -29,6 +29,10 @@ export interface LetterState {
   tembusan: string;
   templateId: string;
   footer: string;
+  lineSpacing: number;
+  place: string;
+  fontFamily: string;
+  fontSize: number;
 }
 
 export const LETTER_TEMPLATES = [
@@ -162,5 +166,9 @@ export const INITIAL_LETTER_STATE: LetterState = {
   lampiran: "-",
   tembusan: "",
   templateId: "lpd",
-  footer: "Demikianlah laporan perjalanan dinas ini dibuat, untuk dipergunakan sebagaimana mestinya."
+  footer: "Demikianlah laporan perjalanan dinas ini dibuat, untuk dipergunakan sebagaimana mestinya.",
+  lineSpacing: 1.5,
+  place: "Mentok",
+  fontFamily: "Times New Roman",
+  fontSize: 12
 };
