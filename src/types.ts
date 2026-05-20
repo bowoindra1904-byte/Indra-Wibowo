@@ -33,20 +33,35 @@ export interface LetterState {
   place: string;
   fontFamily: string;
   fontSize: number;
+  lpdType?: 'tunggal' | 'kolektif';
+  lpdMembers?: { name: string; nip: string; }[];
 }
 
 export const LETTER_TEMPLATES = [
   {
-    id: "lpd",
-    name: "Laporan Perjalanan Dinas",
-    title: "LAPORAN PERJALANAN DINAS",
-    footer: "Demikian laporan hasil perjalanan dinas ini disampaikan untuk menjadi maklum.",
+    id: "lpd_tunggal",
+    name: "LPD (Tunggal)",
+    title: "LAPORAN HASIL PERJALANAN DINAS",
+    footer: "Demikian Laporan Hasil Perjalanan Dinas ini disampaikan, terimakasih.",
     sections: [
-      { title: "I. Dasar", content: "" },
-      { title: "II. Maksud dan Tujuan", content: "" },
-      { title: "III. Waktu dan Tempat", content: "" },
-      { title: "IV. Hasil yang dicapai", content: "" },
-      { title: "V. Kesimpulan dan Saran", content: "" }
+      { title: "I. DASAR PELAKSANAAN TUGAS", content: "Surat Tugas Plt. Kepala Satuan Polisi Pamong Praja Dan Pemadam Kebakaran Nomor : 800.1.11.1/4/ST/SATPOLPPPK/2026 tanggal 21 Januari 2026 untuk Koordinasi Terkait Implementasi Produk Hukum Daerah Dengan Berlakunya KUHP Nomor 1 Tahun 2023 Ke Satuan Polisi Pamong Praja Kabupaten Bangka Di Sungailiat." },
+      { title: "II. MAKSUD DAN TUJUAN", content: "Koordinasi tersebut dilakukan untuk mengetahui sejauh mana Satuan Polisi Pamong Praja Kabupaten Bangka melakukan langkah-langkah strategi apa saja sejak diberlakukannya KUHP Nomor 1 Tahun 2023." },
+      { title: "III. SASARAN", content: "Dalam rangka menyamakan persepsi dan implementasi sejak diberlakukannya KUHP Nomor 1 Tahun 2023 guna sebagai referensi dan acuan untuk meningkatkan kualitas dan penegakan hukum oleh Polisi Pamong Praja dan Pemadam Kebakaran Kabupaten Bangka Barat." },
+      { title: "IV. PEMBAHASAN", content: "Dari perjalanan dinas ini dapat dilaporkan hal-hal sebagai berikut:\n1. Bahwa pada kesempatan tersebut, diterima oleh Kasubbag. Perencanaan dan Pelaporan Sdr. Dolly Seprianto, S.IP., M.M. Sdr. Dolly Seprianto, S.IP., M.M menyampaikan permohonan maaf bila pimpinan/Pejabat di Pol PP Kabupaten Bangka sedang melakukan Dinas ke luar Kota;\n2. Dan selanjutnya kami menyampaikan maksud dan tujuan berkoordinasi terkait sejauh mana Satuan Polisi Pamong Praja Kabupaten Bangka melakukan langkah-langkah srategi apa saja sejak diberlakukannya KUHP Nomor 1 Tahun 2023;\n3. Bahwa Kasubbag. Perencanaan dan Pelaporan Sdr. Dolly Seprianto, S.IP., M.M menjelaskan, saat ini sedang melakukan inventarisasi seluruh Produk hukum yang tidak sesuai dan bertentangan serta menyesuaikan dengan perubahan-perubahan yang ada dalam KUHP terbaru;\n4. Bahwa saat ini juga Satuan Polisi Pamong Praja Kabupaten Bangka meningkatkan koordinasi dengan instansi Pusat dalam hal ini Kementerian Dalam Negeri Republik Indonesia dikarenakan Kemendagri memiliki peran sebagai pembina Satpol PP dalam hal Pembinaan, Pengembangan Kapasitas, dan koordinasi dengan instansi lainnya." },
+      { title: "V. KESIMPULAN DAN SARAN", content: "1. Satuan Polisi Pamong Praja Dan Pemadam Kebakaran Bangka Barat perlu segera meningkatkan koordinasi guna memastikan bahwa implementasi KUHP terbaru berjalan efektif dan efisien.\n2. Satuan Polisi Pamong Praja Dan Pemadam Kebakaran Bangka Barat perlu mengkaji Peraturan Turunan (Peraturan Pemerintah dan Peraturan Menteri) dan mengupdate pengetahuan dan keterampilan dalam hal memahami perubahan-perubahan yang ada dalam KUHP terbaru untuk bagaimana implementasinya dalam tugas sehari-hari." },
+      { title: "VI. PENUTUP", content: "" }
+    ]
+  },
+  {
+    id: "lpd_kolektif",
+    name: "LPD (Kolektif / Tim)",
+    title: "LAPORAN PERJALANAN DINAS",
+    footer: "Demikian laporan kegiatan pengamanan Operasi Pasar Murah di Kecamatan Tempilang ini disusun sebagai bentuk pertanggungjawaban pelaksanaan tugas Satuan Polisi Pamong Praja. Diharapkan kegiatan serupa ke depannya dapat terus berjalan dengan aman, tertib, dan memberikan manfaat nyata bagi masyarakat.",
+    sections: [
+      { title: "I. DASAR", content: "• Surat tugas Kepala SATPOL PP dan Pemadam Kebakaran Kabupaten Bangka Barat Nomor : 800.1.11.1/ 145 /ST /SATPOLPPPK/2026. Tanggal 03 Februari 2026\n• Kegiatan Pencegahan Gangguan Ketentraman dan Ketertiban Umum Melalui Deteksi Dini dan Cegah Dini, Pembinaan dan Penyuluhan, Pelaksanaan Patroli, Pengamanan. Dan pengawalan berdasarkan Peraturan Daerah Kabupaten Bangka Barat Nomor 05 Tahun 2020 atas Perubahan tentang Ketertiban Umum yaitu Kegiatan BKO Pengamanan Operasi Pasar Murah yang digelar oleh Pemerintah Kabupaten Bangka Barat melalui Dinas Koperasi, UKM dan Perdagangan Kab. Bangka Barat di wilayah Kecamatan Tempilang." },
+      { title: "II. WAKTU DAN TEMPAT", content: "• 06:30 WIB s/d Selesai di Lapangan Gedung Serbaguna Kecamatan Tempilang" },
+      { title: "III. MAKSUD DAN TUJUAN", content: "• Untuk menjaga terlaksana dan berjalannya Peraturan Daerah Kabupaten Bangka Barat.\n• Terciptanya dan terjaganya ketentraman dan ketertiban selama kegiatan ini berlangsung\n• Mengantisipasi terjadinya gangguan ketertiban, seperti antrean tidak tertib, kerumunan berlebihan, dan potensi konflik antar masyarakat.\n• Mendukung kelancaran distribusi bahan kebutuhan pokok kepada masyarakat.\n• Memberikan rasa aman dan nyaman bagi masyarakat serta panitia penyelenggara." },
+      { title: "IV. HASIL YANG DIPEROLEH", content: "Pada hari ini Tanggal 03 Februari 2026 Tim Satpol PP PP Satpol PP Kabupaten Bangka Barat Melaksanakan pengamanan kegiatan Operasi Pasar Murah yang digelar oleh Pemerintah Kabupaten Bangka Barat melalui Dinas Koperasi, UKM dan Perdagangan Kab. Bangka Barat di wilayah Kecamatan Tempilang. Kegiatan pengamanan dilaksanakan oleh personel Satuan Polisi Pamong Praja, yang dipimpin secara langsung oleh Kabid dan Kasi Trantibum yang dilakukan oleh Satpol PP antara lain:\n1. Melakukan pengamanan di sekitar lokasi kegiatan Operasi Pasar Murah.\n2. Mengatur ketertiban antrian masyarakat agar tetap tertib dan teratur.\n3. Mengimbau masyarakat untuk mematuhi aturan dan arahan panitia.\n4. Mengantisipasi potensi kericuhan atau gangguan ketertiban selama kegiatan berlangsung.\n5. Berkoordinasi dengan pihak kecamatan, panitia penyelenggara, dan instansi terkait guna memastikan kegiatan berjalan lancar.\n\nSecara umum, kegiatan Operasi Pasar Murah di Kecamatan Tempilang berjalan dengan aman, tertib, dan lancar. Kehadiran personel Satpol PP mampu menciptakan situasi kondusif, sehingga masyarakat dapat memperoleh kebutuhan pokok dengan tertib dan nyaman tanpa adanya gangguan ketertiban yang berarti." }
     ]
   },
   {
@@ -137,38 +152,51 @@ export const LETTER_TEMPLATES = [
 ];
 
 export const INITIAL_LETTER_STATE: LetterState = {
-  title: "LAPORAN PERJALANAN DINAS",
-  recipient: "Kepala Satuan Polisi Pamong Praja dan Pemadam Kebakaran Kabupaten Bangka Barat",
-  sender: "Mustika Sari, SE",
+  title: "LAPORAN HASIL PERJALANAN DINAS",
+  recipient: "Plt. Kepala Satuan Polisi Pamong Praja Dan Pemadam Kebakaran",
+  sender: "Sekretaris Dinas Satuan Polisi Pamong Praja Dan Pemadam Kebakaran",
   subject: "Laporan Perjalanan Dinas",
   sections: [
-    { title: "I. Dasar", content: "" },
-    { title: "II. Waktu dan Tempat", content: "" },
-    { title: "III. Maksud dan Tujuan", content: "" },
-    { title: "IV. Hasil yang diperoleh", content: "" }
+    { title: "I. DASAR PELAKSANAAN TUGAS", content: "Surat Tugas Plt. Kepala Satuan Polisi Pamong Praja Dan Pemadam Kebakaran Nomor : 800.1.11.1/4/ST/SATPOLPPPK/2026 tanggal 21 Januari 2026 untuk Koordinasi Terkait Implementasi Produk Hukum Daerah Dengan Berlakunya KUHP Nomor 1 Tahun 2023 Ke Satuan Polisi Pamong Praja Kabupaten Bangka Di Sungailiat." },
+    { title: "II. MAKSUD DAN TUJUAN", content: "Koordinasi tersebut dilakukan untuk mengetahui sejauh mana Satuan Polisi Pamong Praja Kabupaten Bangka melakukan langkah-langkah strategi apa saja sejak diberlakukannya KUHP Nomor 1 Tahun 2023." },
+    { title: "III. SASARAN", content: "Dalam rangka menyamakan persepsi dan implementasi sejak diberlakukannya KUHP Nomor 1 Tahun 2023 guna sebagai referensi dan acuan untuk meningkatkan kualitas dan penegakan hukum oleh Polisi Pamong Praja dan Pemadam Kebakaran Kabupaten Bangka Barat." },
+    { title: "IV. PEMBAHASAN", content: "Dari perjalanan dinas ini dapat dilaporkan hal-hal sebagai berikut:\n1. Bahwa pada kesempatan tersebut, diterima oleh Kasubbag. Perencanaan dan Pelaporan Sdr. Dolly Seprianto, S.IP., M.M. Sdr. Dolly Seprianto, S.IP., M.M menyampaikan permohonan maaf bila pimpinan/Pejabat di Pol PP Kabupaten Bangka sedang melakukan Dinas ke luar Kota;\n2. Dan selanjutnya kami menyampaikan maksud dan tujuan berkoordinasi terkait sejauh mana Satuan Polisi Pamong Praja Kabupaten Bangka melakukan langkah-langkah srategi apa saja sejak diberlakukannya KUHP Nomor 1 Tahun 2023;\n3. Bahwa Kasubbag. Perencanaan dan Pelaporan Sdr. Dolly Seprianto, S.IP., M.M menjelaskan, saat ini sedang melakukan inventarisasi seluruh Produk hukum yang tidak sesuai dan bertentangan serta menyesuaikan dengan perubahan-perubahan yang ada dalam KUHP terbaru;\n4. Bahwa saat ini juga Satuan Polisi Pamong Praja Kabupaten Bangka meningkatkan koordinasi dengan instansi Pusat dalam hal ini Kementerian Dalam Negeri Republik Indonesia dikarenakan Kemendagri memiliki peran sebagai pembina Satpol PP dalam hal Pembinaan, Pengembangan Kapasitas, dan koordinasi dengan instansi lainnya." },
+    { title: "V. KESIMPULAN DAN SARAN", content: "1. Satuan Polisi Pamong Praja Dan Pemadam Kebakaran Bangka Barat perlu segera meningkatkan koordinasi guna memastikan bahwa implementasi KUHP terbaru berjalan efektif dan efisien.\n2. Satuan Polisi Pamong Praja Dan Pemadam Kebakaran Bangka Barat perlu mengkaji Peraturan Turunan (Peraturan Pemerintah dan Peraturan Menteri) dan mengupdate pengetahuan dan keterampilan dalam hal memahami perubahan-perubahan yang ada dalam KUHP terbaru untuk bagaimana implementasinya dalam tugas sehari-hari." },
+    { title: "VI. PENUTUP", content: "Demikian Laporan Hasil Perjalanan Dinas ini disampaikan, terimakasih." }
   ],
-  date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
-  senderName: "Mustika Sari, SE",
-  senderNip: "198406102010012032",
-  approverName: "SETYAWAN, SP",
+  date: "22 Januari 2026",
+  senderName: "Indra Saputra, S.H., M.H",
+  senderNip: "19840610 201001 2 032",
+  approverName: "Setyawan, SP",
   approverNip: "19811126 200501 1005",
-  approverTitle: "Plt. Kasat Pol PP dan Damkar",
+  approverTitle: "Plt. Kepala",
   showLogo: true,
   logoSize: 80,
   logoUrl: "https://upload.wikimedia.org/wikipedia/commons/b/be/Lambang_Kabupaten_Bangka_Barat.png",
   orgName: "PEMERINTAH KABUPATEN BANGKA BARAT",
   deptName1: "SATUAN POLISI PAMONG PRAJA",
   deptName2: "DAN PEMADAM KEBAKARAN",
-  addressLine1: "Kompleks Perkantoran Pemda Kab. Bangka Barat Dsn. Daya Baru Kec. Mentok",
-  addressLine2: "Prov. Kep. Bangka Belitung 33315",
-  letterNumber: "000 / ......... / SATPOL PP & PK / 2024",
-  hal: "Laporan Perjalanan Dinas",
-  lampiran: "-",
+  addressLine1: "Kompleks Perkantoran Pemerintah Daerah Kab. Bangka Barat Pal 4 Mentok, Kode Pos 33351",
+  addressLine2: "Telepon (0715) 351110, Surat Elektronik: satpolpppk@bangkabaratkab.go.id",
+  letterNumber: "800.1.11.1 / 4 / ST / SATPOLPPPK / 2026",
+  hal: "Laporan Perjalanan Dinas.",
+  lampiran: "1 (satu) berkas",
   tembusan: "",
-  templateId: "lpd",
-  footer: "Demikianlah laporan perjalanan dinas ini dibuat, untuk dipergunakan sebagaimana mestinya.",
-  lineSpacing: 1.5,
+  templateId: "lpd_tunggal",
+  footer: "",
+  lineSpacing: 1.15,
   place: "Mentok",
   fontFamily: "Times New Roman",
-  fontSize: 12
+  fontSize: 12,
+  lpdType: "tunggal",
+  lpdMembers: [
+    { name: "Isfani, S.I.P", nip: "19700504 200903 1 001" },
+    { name: "Ardian, S.E", nip: "19780812 201001 1 015" },
+    { name: "Tamrin", nip: "19760326 200604 1 008" },
+    { name: "Samhudi Ishak", nip: "19800103 200701 1 003" },
+    { name: "Fauzi Mukti", nip: "19831017 200701 1 003" },
+    { name: "Ridho. B. P", nip: "19910807 202012 1 005" },
+    { name: "Kamidi", nip: "NIPPPKPW.198503142025211062" },
+    { name: "Dodhy. S", nip: "NIPPPKPW.197811042025211034" }
+  ]
 };
