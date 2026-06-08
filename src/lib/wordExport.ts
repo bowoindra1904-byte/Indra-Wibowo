@@ -13,6 +13,7 @@ import {
   ImageRun,
 } from "docx";
 import { saveAs } from "file-saver";
+import { logoBase64 } from "./logoBase64";
 
 const toTitleCase = (str: string) => {
   if (!str) return "";
@@ -303,8 +304,8 @@ const parseContentToDocx = (
 export const exportToWord = async (data: LetterData) => {
   const bodyIndent = data.templateId === "lpd_tunggal" ? 1905 : undefined;
   let logoBuffer: Uint8Array | null = null;
-  if (data.showLogo && data.logoUrl) {
-    const arrayBuffer = await getLogoData(data.logoUrl);
+  if (data.showLogo) {
+    const arrayBuffer = await getLogoData(logoBase64);
     if (arrayBuffer) {
       logoBuffer = new Uint8Array(arrayBuffer);
     }

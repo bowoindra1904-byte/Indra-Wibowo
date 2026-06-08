@@ -1,5 +1,6 @@
 import React from 'react';
 import { LetterState } from '../types';
+import { logoBase64 } from '../lib/logoBase64';
 
 const toTitleCase = (str: string) => {
   if (!str) return '';
@@ -166,15 +167,15 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
         <div 
           className="grid items-center min-h-[110px] pb-2"
           style={{ 
-            gridTemplateColumns: (data.showLogo && data.logoUrl) 
+            gridTemplateColumns: data.showLogo 
               ? "15% 70% 15%" 
               : "1fr"
           }}
         >
-          {(data.showLogo && data.logoUrl) && (
+          {data.showLogo && (
             <div className="flex items-center justify-center">
               <img 
-                src={data.logoUrl} 
+                src={logoBase64} 
                 alt="Logo" 
                 style={{ width: `${data.logoSize || 80}px` }}
                 className="h-auto font-normal text-slate-400 text-xs"
@@ -203,7 +204,7 @@ export const LetterPreview: React.FC<LetterPreviewProps> = ({ data }) => {
               </p>
             ) : null}
           </div>
-          {(data.showLogo && data.logoUrl) && (
+          {data.showLogo && (
             <div />
           )}
         </div>

@@ -82,7 +82,6 @@ export default function App() {
     } catch (error: any) {
       console.error("Fetch error:", error);
       setErrorMsg(error.message);
-      alert(`Terjadi kesalahan: ${error.message}`);
     } finally {
       setIsGenerating(false);
     }
@@ -91,34 +90,36 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+      <header className="bg-slate-900 border-b border-slate-800/80 px-6 py-3 flex items-center justify-between sticky top-0 z-50 shadow-md">
         <div className="flex items-center gap-3">
-          <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/20">
-            <FileText className="w-5 h-5" />
+          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 p-2.5 rounded-xl text-white shadow-lg shadow-emerald-500/10">
+            <FileText className="w-5 h-5 text-emerald-50" />
           </div>
           <div>
-            <h1 className="font-bold text-slate-900 font-display tracking-tight">E-Surat Bangka Barat</h1>
-            <p className="text-[10px] text-slate-500 font-semibold tracking-widest uppercase">Tata Naskah Dinas Digital</p>
+            <h1 className="font-bold text-white font-display text-base tracking-tight leading-tight">
+              E-Surat <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">Bangka Barat</span>
+            </h1>
+            <p className="text-[10px] text-slate-400 font-semibold tracking-widest uppercase mt-0.5">Tata Naskah Dinas Digital</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden lg:flex bg-slate-100 p-1 rounded-xl border border-slate-200 mr-4">
+          <div className="hidden lg:flex bg-slate-800 p-1 rounded-xl border border-slate-700 mr-3">
             <button 
               onClick={() => setView('both')}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === 'both' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === 'both' ? 'bg-slate-700 text-teal-300 border border-slate-600/50 shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
             >
               Split View
             </button>
             <button 
                onClick={() => setView('editor')}
-               className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === 'editor' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+               className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === 'editor' ? 'bg-slate-700 text-teal-300 border border-slate-600/50 shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
             >
               Editor
             </button>
             <button 
                onClick={() => setView('preview')}
-               className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === 'preview' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}
+               className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${view === 'preview' ? 'bg-slate-700 text-teal-300 border border-slate-600/50 shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
             >
               Preview
             </button>
@@ -126,11 +127,11 @@ export default function App() {
           
           <button 
             onClick={() => exportToWord(data)}
-            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-xl shadow-indigo-500/20 active:scale-95"
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-teal-500/10 hover:shadow-teal-500/20 active:scale-95 text-xs uppercase tracking-wider"
           >
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export Word</span>
-            <span className="sm:hidden">Export</span>
+            <Download className="w-4 h-4 text-emerald-100" />
+            <span className="hidden sm:inline">Unduh MS Word</span>
+            <span className="sm:hidden">Unduh</span>
           </button>
         </div>
       </header>
@@ -155,6 +156,8 @@ export default function App() {
                 activeTemplate={activeTemplate}
                 onTemplateChange={handleTemplateChange}
                 onReset={handleReset}
+                errorMsg={errorMsg}
+                setErrorMsg={setErrorMsg}
               />
             </motion.div>
           )}

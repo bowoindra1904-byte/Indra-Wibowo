@@ -26,6 +26,12 @@ async function startServer() {
     try {
       const { type, rawNotes, context, sections } = req.body;
 
+      if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "MY_GEMINI_API_KEY" || process.env.GEMINI_API_KEY.trim() === "") {
+        return res.status(400).json({
+          error: "API Key Gemini belum diset dengan benar. Silakan buka file '.env' di editor atau masuk ke menu **Settings** di pojok kanan atas Google AI Studio, lalu tambahkan/perbarui variabel **GEMINI_API_KEY** dengan API Key Anda yang aktif."
+        });
+      }
+
       const systemInstruction = `
         Anda adalah asisten administrasi profesional Pemerintahan Kabupaten Bangka Barat.
         Tugas Anda adalah menulis draf surat resmi berdasarkan Perbup Bangka Barat Nomor 67 Tahun 2023.
@@ -59,7 +65,19 @@ async function startServer() {
       res.json(JSON.parse(response.text || "{}"));
     } catch (error: any) {
       console.error("AI Error:", error);
-      res.status(500).json({ error: error.message });
+      
+      const errorStr = String(error.message || error).toLowerCase();
+      let customError = "Terjadi kesalahan saat memproses draf lewat AI.";
+      
+      if (errorStr.includes("api_key") || errorStr.includes("api key") || errorStr.includes("key not valid") || errorStr.includes("invalid key") || errorStr.includes("key_invalid")) {
+        customError = "API Key Gemini tidak valid atau sudah kedaluwarsa. Silakan perbarui nilai **GEMINI_API_KEY** Anda melalui menu **Settings** di pojok kanan atas Google AI Studio.";
+      } else if (errorStr.includes("quota") || errorStr.includes("429") || errorStr.includes("limit") || errorStr.includes("exhausted") || errorStr.includes("rate limit")) {
+        customError = "Kuota API Key Gemini Anda telah habis (Quota Exceeded / Rate Limit). Silakan ganti dengan API Key yang baru via menu **Settings** di pojok kanan atas Google AI Studio.";
+      } else {
+        customError = `Kesalahan AI (${error.message || error})`;
+      }
+      
+      res.status(500).json({ error: customError });
     }
   });
 

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { LetterState, LETTER_TEMPLATES } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { logoBase64 } from '../lib/logoBase64';
 
 interface LetterEditorProps {
   data: LetterState;
@@ -27,6 +28,8 @@ interface LetterEditorProps {
   activeTemplate: string;
   onTemplateChange: (id: string) => void;
   onReset: () => void;
+  errorMsg?: string | null;
+  setErrorMsg?: (val: string | null) => void;
 }
 
 export const LetterEditor: React.FC<LetterEditorProps> = ({ 
@@ -38,7 +41,9 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
   setRawNotes, 
   activeTemplate, 
   onTemplateChange, 
-  onReset 
+  onReset,
+  errorMsg = null,
+  setErrorMsg
 }) => {
   const [activeTab, setActiveTab] = React.useState<'template' | 'kop' | 'atribut' | 'isi' | 'ttd'>('template');
   
@@ -92,13 +97,13 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
   return (
     <div className="space-y-6 overflow-y-auto max-h-[calc(100vh-100px)] pr-2 custom-scrollbar">
       {/* Dashboard Tap Navigation */}
-      <div className="grid grid-cols-5 gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/80 shadow-sm sticky top-0 z-10 bg-white/95 backdrop-blur-sm">
+      <div className="grid grid-cols-5 gap-1 bg-slate-50 p-1.5 rounded-2xl border border-slate-200/80 shadow-xs sticky top-0 z-10 bg-white/95 backdrop-blur-sm">
         <button
           onClick={() => setActiveTab('template')}
           className={`flex flex-col items-center justify-center py-2.5 px-0.5 rounded-xl transition-all ${
             activeTab === 'template'
-              ? 'bg-white text-indigo-600 shadow-md ring-1 ring-black/5'
-              : 'text-slate-500 hover:text-indigo-600 hover:bg-white/40'
+              ? 'bg-white text-emerald-600 shadow-sm border border-slate-200/50 ring-1 ring-emerald-500/5 font-bold'
+              : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
           }`}
           title="Pilih Template Naskah"
         >
@@ -109,8 +114,8 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
           onClick={() => setActiveTab('kop')}
           className={`flex flex-col items-center justify-center py-2.5 px-0.5 rounded-xl transition-all ${
             activeTab === 'kop'
-              ? 'bg-white text-indigo-600 shadow-md ring-1 ring-black/5'
-              : 'text-slate-500 hover:text-indigo-600 hover:bg-white/40'
+              ? 'bg-white text-emerald-600 shadow-sm border border-slate-200/50 ring-1 ring-emerald-500/5 font-bold'
+              : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
           }`}
           title="Kop Surat & Logo"
         >
@@ -121,8 +126,8 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
           onClick={() => setActiveTab('atribut')}
           className={`flex flex-col items-center justify-center py-2.5 px-0.5 rounded-xl transition-all ${
             activeTab === 'atribut'
-              ? 'bg-white text-indigo-600 shadow-md ring-1 ring-black/5'
-              : 'text-slate-500 hover:text-indigo-600 hover:bg-white/40'
+              ? 'bg-white text-emerald-600 shadow-sm border border-slate-200/50 ring-1 ring-emerald-500/5 font-bold'
+              : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
           }`}
           title="Atribut & Format"
         >
@@ -133,8 +138,8 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
           onClick={() => setActiveTab('isi')}
           className={`flex flex-col items-center justify-center py-2.5 px-0.5 rounded-xl transition-all ${
             activeTab === 'isi'
-              ? 'bg-white text-indigo-600 shadow-md ring-1 ring-black/5'
-              : 'text-slate-500 hover:text-indigo-600 hover:bg-white/40'
+              ? 'bg-white text-emerald-600 shadow-sm border border-slate-200/50 ring-1 ring-emerald-500/5 font-bold'
+              : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
           }`}
           title="Isi Naskah & AI Helper"
         >
@@ -145,8 +150,8 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
           onClick={() => setActiveTab('ttd')}
           className={`flex flex-col items-center justify-center py-2.5 px-0.5 rounded-xl transition-all ${
             activeTab === 'ttd'
-              ? 'bg-white text-indigo-600 shadow-md ring-1 ring-black/5'
-              : 'text-slate-500 hover:text-indigo-600 hover:bg-white/40'
+              ? 'bg-white text-emerald-600 shadow-sm border border-slate-200/50 ring-1 ring-emerald-500/5 font-bold'
+              : 'text-slate-500 hover:text-emerald-600 hover:bg-white/50'
           }`}
           title="Tanda Tangan & Penutup"
         >
@@ -166,14 +171,14 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
             transition={{ duration: 0.15 }}
             className="space-y-4"
           >
-            <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-4">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-xs space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-[0.15em] flex items-center gap-2">
-                  <Library className="w-4 h-4 text-indigo-500" /> Pilih Jenis Naskah Dinas
+                  <Library className="w-4 h-4 text-emerald-500" /> Pilih Jenis Naskah Dinas
                 </h3>
                 <button 
                   onClick={onReset}
-                  className="text-[10px] font-bold text-rose-500 uppercase tracking-wider hover:text-rose-600 transition-colors px-2.5 py-1 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-100"
+                  className="text-[10px] font-bold text-rose-500 uppercase tracking-wider hover:text-rose-600 transition-colors px-2.5 py-1 rounded-lg hover:bg-rose-50 border border-transparent hover:border-rose-100 font-display"
                 >
                   Bersihkan Form
                 </button>
@@ -185,14 +190,14 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                     onClick={() => onTemplateChange(tpl.id)}
                     className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left group ${
                       activeTemplate === tpl.id 
-                        ? 'bg-indigo-50 border-indigo-200 ring-1 ring-indigo-100' 
-                        : 'bg-white border-slate-100 hover:border-slate-200'
+                        ? 'bg-emerald-50/60 border-emerald-200 ring-1 ring-emerald-100/50' 
+                        : 'bg-white border-slate-100 hover:border-slate-200/80'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg transition-colors ${activeTemplate === tpl.id ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}`}>
+                    <div className={`p-2 rounded-lg transition-colors ${activeTemplate === tpl.id ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}`}>
                       <FileText className="w-3.5 h-3.5" />
                     </div>
-                    <span className={`text-xs font-semibold ${activeTemplate === tpl.id ? 'text-indigo-900' : 'text-slate-600'}`}>{tpl.name}</span>
+                    <span className={`text-xs font-bold ${activeTemplate === tpl.id ? 'text-emerald-950 font-display' : 'text-slate-600'}`}>{tpl.name}</span>
                   </button>
                 ))}
               </div>
@@ -217,7 +222,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-indigo-500" /> Identitas Kop Surat (Baris Nama & Alamat)
+                  <Settings className="w-4 h-4 text-emerald-500" /> Identitas Kop Surat (Baris Nama & Alamat)
                 </span>
                 {openSectionId === 'kop-identitas' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -238,7 +243,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.orgName}
                             onChange={(e) => updateField('orgName', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                           />
                         </div>
                         <div>
@@ -247,7 +252,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.deptName1}
                             onChange={(e) => updateField('deptName1', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                           />
                         </div>
                         <div>
@@ -256,7 +261,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.deptName2}
                             onChange={(e) => updateField('deptName2', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -265,7 +270,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.addressLine1}
                             onChange={(e) => updateField('addressLine1', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -274,7 +279,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.addressLine2}
                             onChange={(e) => updateField('addressLine2', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                           />
                         </div>
                       </div>
@@ -291,7 +296,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-indigo-500" /> Logo Instansi & Branding
+                  <ImageIcon className="w-4 h-4 text-emerald-500" /> Logo Instansi & Branding
                 </span>
                 {openSectionId === 'kop-logo' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -313,7 +318,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             onChange={(e) => updateField('showLogo', e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-indigo-600 transition-colors"></div>
+                          <div className="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-emerald-600 transition-colors"></div>
                           <div className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
                         </div>
                         <span className="text-xs font-semibold text-slate-600">Tampilkan Logo Instansi</span>
@@ -327,47 +332,23 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                               type="number" 
                               value={data.logoSize}
                               onChange={(e) => updateField('logoSize', parseInt(e.target.value) || 80)}
-                              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                             />
                           </div>
                           <div>
-                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Logo File (Upload dari Laptop)</label>
-                            <div className="space-y-3">
-                              {!data.logoUrl ? (
-                                <div className="flex flex-col gap-2">
-                                  <input 
-                                    type="file" 
-                                    accept="image/*"
-                                    onChange={handleLogoUpload}
-                                    className="hidden"
-                                    id="logo-upload"
-                                  />
-                                  <label 
-                                    htmlFor="logo-upload"
-                                    className="w-full h-24 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-2 hover:border-indigo-400 hover:bg-indigo-50/30 transition-all cursor-pointer group"
-                                  >
-                                    <div className="p-2 bg-indigo-50 rounded-full text-indigo-600 group-hover:scale-110 transition-transform">
-                                      <ImageIcon className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Klik untuk Upload Logo</span>
-                                  </label>
-                                </div>
-                              ) : (
-                                <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-2">
-                                  <img 
-                                    src={data.logoUrl} 
-                                    alt="Logo Preview" 
-                                    className="h-20 w-auto mx-auto object-contain"
-                                  />
-                                  <button 
-                                    onClick={() => updateField('logoUrl', '')}
-                                    className="absolute top-1 right-1 p-1.5 bg-rose-500 text-white rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-rose-600"
-                                    title="Hapus Logo"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              )}
+                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Status Logo & Integrasi</label>
+                            <div className="flex items-center gap-3.5 bg-emerald-50/40 border border-emerald-100 rounded-xl p-3.5">
+                              <img 
+                                src={logoBase64} 
+                                alt="Official Logo" 
+                                className="h-11 w-auto object-contain bg-white p-1 rounded-lg border border-slate-200/50"
+                              />
+                              <div>
+                                <h4 className="text-xs font-bold text-slate-700">Logo Bangka Barat</h4>
+                                <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase mt-1">
+                                  ● Permanen Terpasang
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -397,7 +378,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-500" /> Atribut Surat & Kelengkapan
+                  <FileText className="w-4 h-4 text-emerald-500" /> Atribut Surat & Kelengkapan
                 </span>
                 {openSectionId === 'atribut-pokok' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -418,7 +399,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.letterNumber}
                             onChange={(e) => updateField('letterNumber', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-mono focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-mono focus:bg-white"
                           />
                         </div>
                         <div>
@@ -427,7 +408,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.lampiran}
                             onChange={(e) => updateField('lampiran', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white"
                           />
                         </div>
                         <div>
@@ -436,7 +417,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.hal}
                             onChange={(e) => updateField('hal', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white font-bold"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white font-bold"
                           />
                         </div>
                         <div>
@@ -446,7 +427,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             value={data.place || ""}
                             onChange={(e) => updateField('place', e.target.value)}
                             placeholder="Contoh: Mentok"
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white"
                           />
                         </div>
                         <div>
@@ -455,7 +436,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.date}
                             onChange={(e) => updateField('date', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white"
                           />
                         </div>
                       </div>
@@ -472,7 +453,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
                >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <User className="w-4 h-4 text-indigo-500" /> Penerima & Tembusan
+                  <User className="w-4 h-4 text-emerald-500" /> Penerima & Tembusan
                 </span>
                 {openSectionId === 'atribut-penerima' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -492,7 +473,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                           type="text" 
                           value={data.recipient}
                           onChange={(e) => updateField('recipient', e.target.value)}
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white"
                         />
                       </div>
                       <div>
@@ -502,7 +483,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                           onChange={(e) => updateField('tembusan', e.target.value)}
                           placeholder="Bupati Bangka Barat&#10;Inspektur Daerah Kab. Bangka Barat"
                           rows={3}
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white custom-scrollbar"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white custom-scrollbar"
                         />
                       </div>
                     </div>
@@ -518,7 +499,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <Type className="w-4 h-4 text-indigo-500" /> Tampilan Huruf & Tata Letak (Tipografi)
+                  <Type className="w-4 h-4 text-emerald-500" /> Tampilan Huruf & Tata Letak (Tipografi)
                 </span>
                 {openSectionId === 'atribut-desain' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -538,7 +519,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                           <select 
                             value={data.fontFamily || "Times New Roman"}
                             onChange={(e) => updateField('fontFamily', e.target.value)}
-                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white font-medium"
+                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white font-medium"
                           >
                             <option value="Times New Roman">Times New Roman (Kearsipan)</option>
                             <option value="Arial">Arial (Sederhana/Modern)</option>
@@ -553,7 +534,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                           <select 
                             value={data.fontSize || 12}
                             onChange={(e) => updateField('fontSize', parseInt(e.target.value) || 12)}
-                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white font-medium"
+                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white font-medium"
                           >
                             <option value={10}>10 pt</option>
                             <option value={11}>11 pt</option>
@@ -568,7 +549,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                           <select 
                             value={data.lineSpacing || 1.15}
                             onChange={(e) => updateField('lineSpacing', parseFloat(e.target.value) || 1.15)}
-                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white font-medium"
+                            className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white font-medium"
                           >
                             <option value={1.0}>1.0 (Rapat)</option>
                             <option value={1.15}>1.15 (Default LPD/ND)</option>
@@ -596,15 +577,15 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
             className="space-y-4"
           >
             {/* Group 1: AI Helper (Collapsible) */}
-            <div className="bg-indigo-50/50 rounded-2xl border border-indigo-100 overflow-hidden shadow-sm">
+            <div className="bg-emerald-50/50 rounded-2xl border border-emerald-100 overflow-hidden shadow-sm">
               <button 
                 onClick={() => toggleSection('isi-ai')}
-                className="w-full px-6 py-4 flex items-center justify-between border-b border-indigo-100/60 hover:bg-indigo-50 transition-colors"
+                className="w-full px-6 py-4 flex items-center justify-between border-b border-emerald-100/60 hover:bg-emerald-50 transition-colors"
               >
-                <span className="text-xs font-bold text-indigo-950 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-600 transition-pulse" /> Asisten Generator Draf AI
+                <span className="text-xs font-bold text-emerald-950 uppercase tracking-[0.1em] flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-600 transition-pulse" /> Asisten Generator Draf AI
                 </span>
-                {openSectionId === 'isi-ai' ? <ChevronUp className="w-4 h-4 text-indigo-400" /> : <ChevronDown className="w-4 h-4 text-indigo-400" />}
+                {openSectionId === 'isi-ai' ? <ChevronUp className="w-4 h-4 text-emerald-400" /> : <ChevronDown className="w-4 h-4 text-emerald-400" />}
               </button>
               
               <AnimatePresence>
@@ -618,14 +599,47 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                     <div className="p-6 space-y-4">
                       <textarea 
                         placeholder="Tuliskan draf kasar atau poin-poin kegiatan di sini (Contoh: Pengamanan operasi pasar murah di kec. tempilang dari jam 6 pagi sampai selesai berjalan sangat kondusif, aman dan terkendali)..."
-                        className="w-full h-24 px-4 py-3 bg-white/60 backdrop-blur-sm border border-indigo-100 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:outline-none text-sm transition-all placeholder:text-indigo-200 custom-scrollbar"
+                        className="w-full h-24 px-4 py-3 bg-white/60 backdrop-blur-sm border border-emerald-100 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-none text-sm transition-all placeholder:text-slate-300 custom-scrollbar"
                         value={rawNotes}
                         onChange={(e) => setRawNotes(e.target.value)}
                       />
+                      
+                      {errorMsg && (
+                        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 text-xs text-rose-800 space-y-2.5 relative">
+                          <div className="flex items-start gap-2.5 pr-6">
+                            <span className="text-rose-500 font-bold text-sm">⚠️</span>
+                            <div>
+                              <p className="font-bold text-rose-950">Gagal Menghubungi Generatif AI</p>
+                              <p className="mt-1 leading-relaxed text-rose-900/85">{errorMsg}</p>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-white/85 border border-rose-100/50 p-3 rounded-lg space-y-1.5 leading-relaxed text-rose-950/80 shadow-xs">
+                            <p className="font-bold uppercase text-[9px] tracking-wider text-rose-900">💡 Cara Mengganti API Key Baru:</p>
+                            <ol className="list-decimal list-inside space-y-1 text-[11px] font-sans">
+                              <li>Klik ikon <span className="font-bold">Settings (ikon gerigi)</span> di pojok kanan/kiri atas layar Google AI Studio.</li>
+                              <li>Di tab Secrets / Environment Variables, temukan nilai <code className="bg-rose-100 px-1 py-0.5 rounded text-rose-800 font-mono text-[10px]">GEMINI_API_KEY</code>.</li>
+                              <li>Ganti atau masukkan kunci baru Anda yang masih aktif dari Google AI Studio.</li>
+                              <li>Selesai! Jalankan generator draf lagi untuk memproses draf surat Anda.</li>
+                            </ol>
+                          </div>
+                          
+                          {setErrorMsg && (
+                            <button 
+                              onClick={() => setErrorMsg(null)}
+                              className="absolute top-2.5 right-2 text-rose-500 hover:text-rose-800 font-bold hover:bg-rose-100 rounded-md px-2 py-0.5 text-[10px] transition-all"
+                              title="Tutup pesan"
+                            >
+                              Tutup
+                            </button>
+                          )}
+                        </div>
+                      )}
+
                       <button 
                         onClick={onGenerate}
                         disabled={isGenerating || !rawNotes}
-                        className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 text-white text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 active:scale-[0.98]"
+                        className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-200/50 active:scale-[0.98]"
                       >
                         {isGenerating ? (
                           <motion.div 
@@ -652,7 +666,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-indigo-500" /> Konten Paragraf Naskah
+                  <FileText className="w-4 h-4 text-emerald-500" /> Konten Paragraf Naskah
                 </span>
                 {openSectionId === 'isi-paragraf' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -673,7 +687,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             value={section.content}
                             onChange={(e) => updateSection(idx, e.target.value)}
                             placeholder="Tulis draf paragraf, rincian, atau buat tabel dengan format markdown..."
-                            className="w-full h-40 px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all leading-relaxed custom-scrollbar"
+                            className="w-full h-40 px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all leading-relaxed custom-scrollbar"
                           />
                         </div>
                       ))}
@@ -703,7 +717,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                   className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
                 >
                   <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                    <Users className="w-4 h-4 text-indigo-500" /> Daftar Anggota Tim Pelaksana ({data.lpdMembers?.length || 0} Orang)
+                    <Users className="w-4 h-4 text-emerald-500" /> Daftar Anggota Tim Pelaksana ({data.lpdMembers?.length || 0} Orang)
                   </span>
                   {openSectionId === 'ttd-pelaksana' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
                 </button>
@@ -727,14 +741,14 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                                   value={member.name}
                                   onChange={(e) => updateMember(i, 'name', e.target.value)}
                                   placeholder="Nama Pelaksana"
-                                  className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                  className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                                 />
                                 <input 
                                   type="text"
                                   value={member.nip}
                                   onChange={(e) => updateMember(i, 'nip', e.target.value)}
                                   placeholder="NIP Pelaksana"
-                                  className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono focus:ring-1 focus:ring-indigo-500 focus:outline-none"
+                                  className="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono focus:ring-1 focus:ring-emerald-500 focus:outline-none"
                                 />
                               </div>
                               <button 
@@ -754,7 +768,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
 
                         <button 
                           onClick={addMember}
-                          className="w-full py-2 border-2 border-dashed border-slate-200 hover:border-indigo-400 hover:text-indigo-600 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500"
+                          className="w-full py-2 border-2 border-dashed border-slate-200 hover:border-emerald-400 hover:text-emerald-600 rounded-xl transition-all flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500"
                         >
                           <Plus className="w-4 h-4" /> Tambah Anggota Tim
                         </button>
@@ -772,7 +786,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                 className="w-full px-6 py-4 flex items-center justify-between border-b border-slate-100 hover:bg-slate-50/50 transition-colors"
               >
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-[0.1em] flex items-center gap-2">
-                  <User className="w-4 h-4 text-indigo-500" /> Penandatangan & Penutup Naskah
+                  <User className="w-4 h-4 text-emerald-500" /> Penandatangan & Penutup Naskah
                 </span>
                 {openSectionId === 'ttd-pejabat' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
               </button>
@@ -795,7 +809,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                                 type="text" 
                                 value={data.senderName}
                                 onChange={(e) => updateField('senderName', e.target.value)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white"
                               />
                             </div>
                             <div>
@@ -804,7 +818,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                                 type="text" 
                                 value={data.senderNip}
                                 onChange={(e) => updateField('senderNip', e.target.value)}
-                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-mono focus:bg-white"
+                                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-mono focus:bg-white"
                               />
                             </div>
                           </>
@@ -815,7 +829,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.approverName}
                             onChange={(e) => updateField('approverName', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white"
                           />
                         </div>
                         <div>
@@ -824,7 +838,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.approverNip}
                             onChange={(e) => updateField('approverNip', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm font-mono focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm font-mono focus:bg-white"
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -833,7 +847,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                             type="text" 
                             value={data.approverTitle}
                             onChange={(e) => updateField('approverTitle', e.target.value)}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm focus:bg-white"
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm focus:bg-white"
                           />
                         </div>
                       </div>
@@ -845,7 +859,7 @@ export const LetterEditor: React.FC<LetterEditorProps> = ({
                           onChange={(e) => updateField('footer', e.target.value)}
                           placeholder="Demikian laporan perjalanan dinas ini disampaikan..."
                           rows={2}
-                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm transition-all focus:bg-white custom-scrollbar"
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm transition-all focus:bg-white custom-scrollbar"
                         />
                       </div>
                     </div>
